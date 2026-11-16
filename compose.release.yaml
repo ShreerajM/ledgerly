@@ -1,0 +1,15 @@
+# Release override: run pinned, already-built image tags instead of rebuilding from source.
+#
+#   RELEASE_TAG=v1 docker compose -f compose.yaml -f compose.release.yaml up -d --no-build --no-deps api web
+#
+# Used for deployments and rollbacks (see assessment/task-04-deployment/deployment-guide.md, section 9).
+# Always pair it with --no-build so Compose never rebuilds an image from the current source.
+name: ledgerly
+
+services:
+  migrate:
+    image: ledgerly-api:${RELEASE_TAG:?Set RELEASE_TAG, for example RELEASE_TAG=v1}
+  api:
+    image: ledgerly-api:${RELEASE_TAG:?Set RELEASE_TAG, for example RELEASE_TAG=v1}
+  web:
+    image: ledgerly-web:${RELEASE_TAG:?Set RELEASE_TAG, for example RELEASE_TAG=v1}

@@ -1,0 +1,21 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+
+# Local PostgreSQL data folder created by `npm run db:dev`
+.pgdata/
+
+# Secrets and local config: never commit these
+.env
+.env.local
+.env.*.local
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Generated Prisma Client (recreated by `npm run db:generate`)
+backend/src/generated/

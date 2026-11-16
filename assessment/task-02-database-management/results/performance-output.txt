@@ -1,0 +1,105 @@
+ database_name | connected_user |                                                     postgres_version                                                     | session_timezone 
+---------------+----------------+--------------------------------------------------------------------------------------------------------------------------+------------------
+ ledgerly      | ledgerly       | PostgreSQL 18.7 (Debian 18.7-1.pgdg13+2) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit | Etc/UTC
+(1 row)
+
+ datname  | state  | connection_count 
+----------+--------+------------------
+ ledgerly | idle   |                3
+ ledgerly | active |                1
+(2 rows)
+
+  pid  | usename  | application_name | client_addr | state | wait_event_type | wait_event |    query_age    |                                                  query_excerpt                                                   
+-------+----------+------------------+-------------+-------+-----------------+------------+-----------------+------------------------------------------------------------------------------------------------------------------
+  7693 | ledgerly | psql             |             | idle  | Client          | ClientRead | 05:32:08.725267 | SELECT * FROM users;
+ 25439 | ledgerly | psql             |             | idle  | Client          | ClientRead | 00:16:37.719945 | SELECT c.oid::pg_catalog.regclass, c.relkind, inhdetachpending, pg_catalog.pg_get_expr(c.relpartbound, c.oid)   +
+       |          |                  |             |       |                 |            |                 | FROM pg_catalog.pg_class c, pg_catalog.pg_inherits i                                                            +
+       |          |                  |             |       |                 |            |                 | WHERE c.oid = i.inhrelid AND i.inhparent = '16434'                                                              +
+       |          |                  |             |       |                 |            |                 | ORDER BY pg_catalog.pg_get_expr(c.relpartbound, c.oid) = 'DEFAULT', c.oid::pg_catalog.regclass::pg_catalog.text;
+ 24738 | ledgerly | ledgerly-api     | 172.20.0.3  | idle  | Client          | ClientRead | 00:00:02.698995 | SELECT 1
+(3 rows)
+
+  pid  | usename  | application_name | state  | transaction_age |    state_age     | wait_event_type | wait_event |                 query_excerpt                 
+-------+----------+------------------+--------+-----------------+------------------+-----------------+------------+-----------------------------------------------
+ 27314 | ledgerly | psql             | active | 00:00:00        | -00:00:00.000001 |                 |            | SELECT pid,                                  +
+       |          |                  |        |                 |                  |                 |            |        usename,                              +
+       |          |                  |        |                 |                  |                 |            |        application_name,                     +
+       |          |                  |        |                 |                  |                 |            |        state,                                +
+       |          |                  |        |                 |                  |                 |            |        now() - xact_start AS transaction_age,+
+       |          |                  |        |                 |                  |                 |            |        now() - state_change AS state_age,    +
+       |          |                  |        |                 |                  |                 |            |        wait_event_type,                      +
+       |          |                  |        |                 |                  |                 |            |        wait_event,                           +
+       |          |                  |        |                 |                  |                 |            |        LEFT(query, 500) AS query_excerpt     +
+       |          |                  |        |                 |                  |                 |            | FROM pg_stat_activity                        +
+       |          |                  |        |                 |                  |                 |            | WHERE datname = current_database()           +
+       |          |                  |        |                 |                  |                 |            |   AND xact_start IS NOT NULL                 +
+       |          |                  |        |                 |                  |                 |            | ORDER BY xact_start;
+(1 row)
+
+     table_name     | seq_scan | seq_tup_read | idx_scan | idx_tup_fetch | n_live_tup | n_dead_tup | last_analyze |       last_autoanalyze        
+--------------------+----------+--------------+----------+---------------+------------+------------+--------------+-------------------------------
+ _prisma_migrations |        4 |            2 |        2 |             2 |          1 |          2 |              | 
+ transactions       |       76 |         3543 |       67 |           125 |         52 |          0 |              | 2026-11-16 08:22:39.651454+00
+ users              |       50 |         1028 |      168 |           295 |         23 |         11 |              | 
+(3 rows)
+
+     table_name     |             index_name              | idx_scan | index_size 
+--------------------+-------------------------------------+----------+------------
+ _prisma_migrations | _prisma_migrations_pkey             |        2 | 16 kB
+ transactions       | transactions_created_at_idx         |        7 | 16 kB
+ transactions       | transactions_pkey                   |        1 | 16 kB
+ transactions       | transactions_reference_key          |        0 | 16 kB
+ transactions       | transactions_status_created_at_idx  |       57 | 16 kB
+ transactions       | transactions_user_id_created_at_idx |        2 | 16 kB
+ users              | users_email_key                     |       10 | 16 kB
+ users              | users_is_active_role_idx            |        0 | 16 kB
+ users              | users_pkey                          |      158 | 16 kB
+(9 rows)
+
+                                                                                 QUERY PLAN                                                                                  
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2.29..2.29 rows=2 width=35) (actual time=0.012..0.012 rows=4.00 loops=1)
+   Output: id, reference, user_id, amount, status, created_at
+   Sort Key: transactions.created_at DESC
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=1
+   ->  Seq Scan on public.transactions  (cost=0.00..2.28 rows=2 width=35) (actual time=0.006..0.007 rows=4.00 loops=1)
+         Output: id, reference, user_id, amount, status, created_at
+         Filter: ((transactions.status = 'failed'::transaction_status) AND (transactions.created_at <= now()) AND (transactions.created_at >= (now() - '7 days'::interval)))
+         Rows Removed by Filter: 48
+         Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=62
+ Planning Time: 0.190 ms
+ Execution Time: 0.020 ms
+(14 rows)
+
+                                                         QUERY PLAN                                                          
+-----------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1.70..1.71 rows=5 width=35) (actual time=0.011..0.011 rows=5.00 loops=1)
+   Output: id, reference, user_id, amount, status, created_at
+   Buffers: shared hit=4
+   ->  Sort  (cost=1.70..1.71 rows=5 width=35) (actual time=0.010..0.010 rows=5.00 loops=1)
+         Output: id, reference, user_id, amount, status, created_at
+         Sort Key: transactions.created_at DESC, transactions.id DESC
+         Sort Method: quicksort  Memory: 25kB
+         Buffers: shared hit=4
+         ->  Seq Scan on public.transactions  (cost=0.00..1.64 rows=5 width=35) (actual time=0.002..0.004 rows=5.00 loops=1)
+               Output: id, reference, user_id, amount, status, created_at
+               Filter: (transactions.user_id = 3)
+               Rows Removed by Filter: 47
+               Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=4
+ Planning Time: 0.031 ms
+ Execution Time: 0.016 ms
+(17 rows)
+
+                name                 | setting | unit |       source       
+-------------------------------------+---------+------+--------------------
+ idle_in_transaction_session_timeout | 0       | ms   | default
+ max_connections                     | 100     |      | configuration file
+ statement_timeout                   | 0       | ms   | default
+ superuser_reserved_connections      | 3       |      | default
+(4 rows)
+

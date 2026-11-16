@@ -1,0 +1,14 @@
+flowchart TB
+  request[HTTP request] --> middleware[Global middleware<br/>request ID, logging, Helmet, rate limits, JSON parsing]
+  middleware --> route[Route matching]
+  route -->|public endpoint| public[Register / Login / Health]
+  route -->|protected endpoint| auth[Authentication<br/>verify JWT and load current user]
+  auth --> role[Role authorization<br/>admin-only checks where required]
+  public --> validate[Zod request validation]
+  role --> validate
+  validate --> service[Service layer<br/>business rules]
+  service --> prisma[Prisma Client]
+  prisma --> database[(PostgreSQL)]
+  service --> response[Validated response model<br/>sendJson / Zod]
+  middleware -. unhandled error .-> errors[Central error handler<br/>consistent JSON error response]
+  validate -. validation / route error .-> errors

@@ -1,0 +1,15 @@
+{
+  "name": "ledgerly",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ledgerly: transactions console (React frontend, Express API, PostgreSQL)",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "setup": "node scripts/setup-local.mjs",
+    "dev": "node scripts/dev.mjs",
+    "smoke": "node scripts/smoke-test.mjs",
+    "check": "npm --prefix backend run check && npm --prefix frontend run lint && npm --prefix frontend test && npm --prefix frontend run build"
+  }
+}

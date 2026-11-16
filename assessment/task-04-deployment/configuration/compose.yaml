@@ -1,0 +1,98 @@
+# Ledgerly: the whole application with one command.
+#
+#   cp .env.example .env
+#   docker compose up --build        then open http://localhost:8080
+#
+# Start-up order (each step waits for the previous one to be healthy):
+#   db  ->  migrate (one-off: applies migrations, loads demo data on a fresh database)  ->  api  ->  web
+#
+# Only the web container is reachable from your computer. The database and the API stay on the private network.
+name: ledgerly
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-backend: &backend
+  build:
+    context: ./backend
+  image: ledgerly-api:local
+
+services:
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ledgerly}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env first}
+      POSTGRES_DB: ${POSTGRES_DB:-ledgerly}
+    volumes:
+      # PostgreSQL 18+ images keep data in a versioned folder under /var/lib/postgresql.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    logging: *default-logging
+
+  # Runs once and exits: applies database migrations, then loads demo data if SEED_DEMO_DATA=true
+  # (the seed skips itself when the database already has users, so restarts are safe).
+  migrate:
+    <<: *backend
+    command:
+      - sh
+      - -c
+      - 'npx prisma migrate deploy && if [ "$$SEED_DEMO_DATA" = "true" ]; then npx prisma db seed; fi'
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-ledgerly}:${POSTGRES_PASSWORD:?Copy .env.example to .env first}@db:5432/${POSTGRES_DB:-ledgerly}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
+    logging: *default-logging
+
+  api:
+    <<: *backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      DATABASE_URL: postgres://${POSTGRES_USER:-ledgerly}:${POSTGRES_PASSWORD:?Copy .env.example to .env first}@db:5432/${POSTGRES_DB:-ledgerly}
+      JWT_SECRET: ${JWT_SECRET:?Copy .env.example to .env first}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Kolkata}
+      # One proxy (the web container) sits in front of the API.
+      TRUST_PROXY: "1"
+      # The demo values in .env.example are refused in production unless this is true.
+      ALLOW_DEMO_SECRETS: ${ALLOW_DEMO_SECRETS:-false}
+    security_opt:
+      - no-new-privileges:true
+    logging: *default-logging
+
+  web:
+    build:
+      context: ./frontend
+    image: ledgerly-web:local
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+    security_opt:
+      - no-new-privileges:true
+    logging: *default-logging
+
+volumes:
+  pgdata:

@@ -1,0 +1,13 @@
+flowchart TB
+  browser([Browser]) -->|host port 8080| web
+  subgraph private [Private Docker network — all Compose services]
+    web[web<br/>Nginx unprivileged<br/>static files + /api proxy]
+    api[api<br/>Node.js 26 / Express 5<br/>internal port 4000]
+    db[(db<br/>PostgreSQL 18<br/>pgdata named volume)]
+    migrate[migrate<br/>one-off Prisma migration<br/>optional demo seed]
+    web -->|/api/*| api
+    api -->|Prisma + connection pool| db
+    migrate -->|migration + seed| db
+  end
+  note[Startup order:<br/>db healthy → migrate succeeds<br/>→ api healthy → web starts]
+  web -.-> note

@@ -1,0 +1,83 @@
+ normalized_email | duplicate_count | user_ids 
+------------------+-----------------+----------
+(0 rows)
+
+ id |     name      |       email        | role | is_active |       last_login_at        |         created_at         
+----+---------------+--------------------+------+-----------+----------------------------+----------------------------
+ 22 | Divya Nair    | divya@example.com  | user | f         |                            | 2026-10-17 08:21:20.648+00
+ 20 | Anjali Kadam  | anjali@example.com | user | f         | 2026-09-02 08:21:20.648+00 | 2026-07-30 08:21:20.648+00
+ 18 | Pooja Bhoir   | pooja@example.com  | user | f         | 2026-09-15 08:21:20.648+00 | 2026-07-24 08:21:20.648+00
+ 19 | Nikhil Sawant | nikhil@example.com | user | f         | 2026-09-29 08:21:20.648+00 | 2026-07-27 08:21:20.648+00
+ 21 | Harsh Mehta   | harsh@example.com  | user | f         | 2026-10-06 08:21:20.648+00 | 2026-08-07 08:21:20.648+00
+(5 rows)
+
+ id |     name      |       email        | is_active |       last_login_at        
+----+---------------+--------------------+-----------+----------------------------
+ 22 | Divya Nair    | divya@example.com  | f         | 
+ 20 | Anjali Kadam  | anjali@example.com | f         | 2026-09-02 08:21:20.648+00
+ 18 | Pooja Bhoir   | pooja@example.com  | f         | 2026-09-15 08:21:20.648+00
+ 19 | Nikhil Sawant | nikhil@example.com | f         | 2026-09-29 08:21:20.648+00
+ 21 | Harsh Mehta   | harsh@example.com  | f         | 2026-10-06 08:21:20.648+00
+(5 rows)
+
+ id |     name      |       email        | role | is_active |         created_at         
+----+---------------+--------------------+------+-----------+----------------------------
+ 13 | Sahil Khan    | sahil@example.com  | user | t         | 2026-09-17 08:21:20.648+00
+ 17 | Yash Thakur   | yash@example.com   | user | t         | 2026-10-07 08:21:20.648+00
+ 18 | Pooja Bhoir   | pooja@example.com  | user | f         | 2026-07-24 08:21:20.648+00
+ 19 | Nikhil Sawant | nikhil@example.com | user | f         | 2026-07-27 08:21:20.648+00
+ 20 | Anjali Kadam  | anjali@example.com | user | f         | 2026-07-30 08:21:20.648+00
+ 21 | Harsh Mehta   | harsh@example.com  | user | f         | 2026-08-07 08:21:20.648+00
+ 22 | Divya Nair    | divya@example.com  | user | f         | 2026-10-17 08:21:20.648+00
+(7 rows)
+
+ user_id |      name       |          email          | successful_transaction_count | successful_transaction_total 
+---------+-----------------+-------------------------+------------------------------+------------------------------
+       6 | Sneha Patil     | sneha@example.com       |                            3 |                     75700.00
+      14 | Tanvi Gharat    | tanvi@example.com       |                            3 |                     55250.00
+      10 | Nisha Gawande   | nisha@example.com       |                            3 |                     52850.75
+       5 | Arjun Naik      | arjun@example.com       |                            3 |                     52400.50
+       1 | Asha Verma      | asha@example.com        |                            3 |                     49800.00
+       9 | Vikram More     | vikram@example.com      |                            3 |                     39975.50
+      15 | Omkar Patil     | omkar@example.com       |                            3 |                     39200.00
+      16 | Riya Shah       | riya@example.com        |                            1 |                     36900.00
+       4 | Farah Sheikh    | farah@example.com       |                            2 |                     27600.00
+      11 | Aditya Pawar    | aditya@example.com      |                            1 |                     26700.00
+       7 | Kabir Joshi     | kabir@example.com       |                            3 |                     26600.00
+      12 | Priya Mhatre    | priya@example.com       |                            3 |                     25500.00
+       3 | Meera Kulkarni  | meera@example.com       |                            3 |                     22250.00
+       2 | Rohan Deshmukh  | rohan@example.com       |                            2 |                     21050.00
+       8 | Isha Rane       | isha@example.com        |                            2 |                     16249.00
+      13 | Sahil Khan      | sahil@example.com       |                            0 |                         0.00
+      17 | Yash Thakur     | yash@example.com        |                            0 |                         0.00
+      18 | Pooja Bhoir     | pooja@example.com       |                            0 |                         0.00
+      19 | Nikhil Sawant   | nikhil@example.com      |                            0 |                         0.00
+      20 | Anjali Kadam    | anjali@example.com      |                            0 |                         0.00
+      21 | Harsh Mehta     | harsh@example.com       |                            0 |                         0.00
+      22 | Divya Nair      | divya@example.com       |                            0 |                         0.00
+      23 | Shreeraj Mhatre | shrerajmhatre@gmail.com |                            0 |                         0.00
+(23 rows)
+
+ id | reference | user_id |  user_name   |       email        |  amount  | status |      note       |         created_at         
+----+-----------+---------+--------------+--------------------+----------+--------+-----------------+----------------------------
+ 46 | TXN-0046  |       7 | Kabir Joshi  | kabir@example.com  |  1250.00 | failed | Card declined   | 2026-11-15 02:21:20.678+00
+ 44 | TXN-0044  |      16 | Riya Shah    | riya@example.com   |  2999.00 | failed | Gateway timeout | 2026-11-14 03:21:20.678+00
+ 41 | TXN-0041  |      11 | Aditya Pawar | aditya@example.com |  7450.00 | failed | Card declined   | 2026-11-12 07:21:20.678+00
+ 38 | TXN-0038  |       8 | Isha Rane    | isha@example.com   | 21000.00 | failed | Gateway timeout | 2026-11-10 06:21:20.678+00
+(4 rows)
+
+ total_transactions_all_statuses | successful_transactions | pending_transactions | failed_transactions | failed_transactions_last_7_days 
+---------------------------------+-------------------------+----------------------+---------------------+---------------------------------
+                              52 |                      38 |                    6 |                   8 |                               4
+(1 row)
+
+ user_transaction_count | successful_count | pending_count | failed_count 
+------------------------+------------------+---------------+--------------
+                      5 |                3 |             2 |            0
+(1 row)
+
+ joined_rows | distinct_transactions | possible_fanout_rows 
+-------------+-----------------------+----------------------
+          52 |                    52 |                    0
+(1 row)
+

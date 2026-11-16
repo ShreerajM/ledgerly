@@ -1,0 +1,64 @@
+{
+  "name": "ledgerly-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "REST API for the Ledgerly transactions console (Express 5, PostgreSQL 18)",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env src/server.ts | pino-pretty",
+    "predev": "npm run db:generate",
+    "start": "node --env-file-if-exists=.env src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "pretypecheck": "npm run db:generate",
+    "lint": "oxlint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node --env-file-if-exists=.env --test --test-concurrency=1 \"test/**/*.test.ts\"",
+    "pretest": "npm run db:generate",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "db:dev": "node --env-file-if-exists=.env scripts/dev-db.ts",
+    "db:generate": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:status": "prisma migrate status",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force && npm run db:seed",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "argon2": "^0.45.2",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.4",
+    "helmet": "^8.3.0",
+    "jose": "^6.2.17",
+    "pg": "^8.23.1",
+    "pino": "^10.4.0",
+    "pino-http": "^11.0.0",
+    "prisma": "7.10.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "embedded-postgres": "^18.6.0-beta.19",
+    "oxlint": "^1.93.0",
+    "pino-pretty": "^13.2.0",
+    "prettier": "^3.10.1",
+    "typescript": "^7.0.2"
+  },
+  "allowScripts": {
+    "argon2@0.45.2": true,
+    "@embedded-postgres/darwin-arm64@18.6.0-beta.19": true,
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true,
+    "prisma@7.10.1": true,
+    "@prisma/engines@7.10.1": true
+  }
+}

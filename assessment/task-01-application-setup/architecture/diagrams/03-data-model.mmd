@@ -1,0 +1,23 @@
+erDiagram
+  USERS ||--o{ TRANSACTIONS : owns
+  USERS {
+    int id PK
+    text name
+    text email UK
+    text password_hash
+    user_role role
+    boolean is_active
+    timestamptz last_login_at
+    timestamptz created_at
+    timestamptz updated_at
+  }
+  TRANSACTIONS {
+    int id PK
+    text reference UK
+    int user_id FK
+    numeric amount
+    transaction_status status
+    text note
+    timestamptz created_at
+    timestamptz updated_at
+  }

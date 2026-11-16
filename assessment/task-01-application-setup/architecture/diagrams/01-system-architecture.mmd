@@ -1,0 +1,12 @@
+flowchart LR
+  browser([Browser<br/>desktop or mobile]) -->|HTTP :8080 in demo stack| web
+  subgraph docker [Docker Compose private network]
+    web[Nginx<br/>static hosting + reverse proxy]
+    spa[React 19 SPA<br/>Vite production build]
+    api[Node.js 26<br/>Express 5 REST API]
+    prisma[Prisma Client<br/>PostgreSQL driver / pool]
+    db[(PostgreSQL 18)]
+    web -->|/ serves built assets| spa
+    web -->|/api/* proxy to api:4000| api
+    api --> prisma -->|SQL| db
+  end

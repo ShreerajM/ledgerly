@@ -1,0 +1,17 @@
+# Keep the build context small and keep secrets and local data out of the image.
+node_modules
+.env
+.env.*
+!.env.example
+.pgdata
+src/generated
+test
+scripts
+coverage
+*.log
+Dockerfile
+.dockerignore
+.prettierrc.json
+.prettierignore
+.oxlintrc.json
+README.md
